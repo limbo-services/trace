@@ -55,8 +55,6 @@ func New(config *Config) (*Hander, error) {
 		bucket:       storageClient.Bucket(config.Bucket),
 	}
 
-	go handler.flusher()
-
 	return handler, nil
 }
 
@@ -236,14 +234,6 @@ func (h *Hander) run() {
 
 	for _ = range ticker.C {
 		go h.Flush()
-	}
-}
-
-func (h *Hander) flusher() {
-	ticker := time.NewTicker(5 * time.Second)
-	defer ticker.Stop()
-	for _ = range ticker.C {
-		h.Flush()
 	}
 }
 
