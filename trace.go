@@ -1,6 +1,7 @@
 package trace
 
 import (
+	"errors"
 	"fmt"
 	"runtime/debug"
 	"sync"
@@ -199,22 +200,48 @@ func (s *Span) Logf(format string, args ...interface{}) {
 	})
 }
 
-func (s *Span) Error(args ...interface{}) {
+func (s *Span) Error(args ...interface{}) error {
+	var (
+		err  error
+		text string
+	)
+
+	if len(args) == 1 {
+		if e, ok := args[0].(error); ok && e != nil {
+			err = e
+			text = e.Error()
+		}
+	}
+
+	if err == nil {
+		text = fmt.Sprint(args...)
+		err = errors.New(text)
+	}
+
 	s.addLogEntry(LogEntry{
 		Time:  time.Now().UnixNano(),
-		Text:  fmt.Sprint(args...),
+		Text:  text,
 		Stack: string(debug.Stack()),
 		Error: true,
 	})
+
+	return err
 }
 
-func (s *Span) Errorf(format string, args ...interface{}) {
+func (s *Span) Errorf(format string, args ...interface{}) error {
+	var (
+		text = fmt.Sprintf(format, args...)
+		err  = errors.New(text)
+	)
+
 	s.addLogEntry(LogEntry{
 		Time:  time.Now().UnixNano(),
-		Text:  fmt.Sprintf(format, args...),
+		Text:  text,
 		Stack: string(debug.Stack()),
 		Error: true,
 	})
+
+	return err
 }
 
 func (s *Span) Fatal(args ...interface{}) {
