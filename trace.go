@@ -267,6 +267,11 @@ func (s *Span) Fatalf(format string, args ...interface{}) {
 }
 
 func (s *Span) Close() {
+	var (
+		repanic      bool
+		repanicValue interface{}
+	)
+
 	if r := recover(); r != nil {
 		e, ok := r.(*LogEntry)
 		if ok {
@@ -281,17 +286,20 @@ func (s *Span) Close() {
 		}
 		if !s.config.PanicGuard {
 			// re-panic
-			panic(r)
+			repanic = true
+			repanicValue = r
 		}
 	}
 
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
 
-	if s.End != 0 {
-		return
+	if s.End == 0 {
+		s.End = time.Now().UnixNano()
+		s.trace.spanDone()
 	}
 
-	s.End = time.Now().UnixNano()
-	s.trace.spanDone()
+	if repanic {
+		panic(repanicValue)
+	}
 }
