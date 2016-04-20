@@ -1,4 +1,4 @@
-package trace
+package trace // import "limbo.services/trace"
 
 import (
 	"errors"

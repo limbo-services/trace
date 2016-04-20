@@ -1,4 +1,4 @@
-package dev
+package dev // import "limbo.services/trace/dev"
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/limbo-services/trace"
+	"limbo.services/trace"
 )
 
 func NewHandler(l *log.Logger) trace.Handler {

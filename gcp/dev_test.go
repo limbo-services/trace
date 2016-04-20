@@ -10,7 +10,7 @@ import (
 
 	"golang.org/x/net/context"
 
-	"github.com/limbo-services/trace"
+	"limbo.services/trace"
 )
 
 func Test(t *testing.T) {

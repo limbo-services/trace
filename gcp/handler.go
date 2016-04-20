@@ -1,4 +1,4 @@
-package gcp
+package gcp // import "limbo.services/trace/gcp"
 
 import (
 	"bufio"
@@ -21,7 +21,7 @@ import (
 	"google.golang.org/cloud/pubsub"
 	"google.golang.org/cloud/storage"
 
-	"github.com/limbo-services/trace"
+	"limbo.services/trace"
 )
 
 type Config struct {
