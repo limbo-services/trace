@@ -82,3 +82,22 @@ func (t *Tracer) handleTrace(trace *Trace) {
 type fallbackHandlerImp struct{}
 
 func (h *fallbackHandlerImp) HandleTrace(t *Trace) error { return nil }
+
+func MultiHandler(h ...Handler) Handler {
+	return multiHandler(h)
+}
+
+type multiHandler []Handler
+
+func (m multiHandler) HandleTrace(t *Trace) error {
+	var firstErr error
+
+	for _, h := range m {
+		err := h.HandleTrace(t)
+		if err != nil && firstErr == nil {
+			firstErr = err
+		}
+	}
+
+	return firstErr
+}
