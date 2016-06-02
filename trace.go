@@ -3,7 +3,6 @@ package trace // import "limbo.services/trace"
 import (
 	"errors"
 	"fmt"
-	"runtime/debug"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -221,7 +220,7 @@ func (s *Span) Error(args ...interface{}) error {
 	s.addLogEntry(LogEntry{
 		Time:  time.Now().UnixNano(),
 		Text:  text,
-		Stack: string(debug.Stack()),
+		Stack: string(captureStack(1)),
 		Error: true,
 	})
 
@@ -237,7 +236,7 @@ func (s *Span) Errorf(format string, args ...interface{}) error {
 	s.addLogEntry(LogEntry{
 		Time:  time.Now().UnixNano(),
 		Text:  text,
-		Stack: string(debug.Stack()),
+		Stack: string(captureStack(1)),
 		Error: true,
 	})
 
@@ -248,7 +247,7 @@ func (s *Span) Fatal(args ...interface{}) {
 	e := LogEntry{
 		Time:  time.Now().UnixNano(),
 		Text:  fmt.Sprint(args...),
-		Stack: string(debug.Stack()),
+		Stack: string(captureStack(1)),
 		Error: true,
 	}
 	s.addLogEntry(e)
@@ -259,7 +258,7 @@ func (s *Span) Fatalf(format string, args ...interface{}) {
 	e := LogEntry{
 		Time:  time.Now().UnixNano(),
 		Text:  fmt.Sprintf(format, args...),
-		Stack: string(debug.Stack()),
+		Stack: string(captureStack(1)),
 		Error: true,
 	}
 	s.addLogEntry(e)
@@ -280,7 +279,7 @@ func (s *Span) Close() {
 			s.addLogEntry(LogEntry{
 				Time:  time.Now().UnixNano(),
 				Text:  fmt.Sprintf("panic: %v", r),
-				Stack: string(debug.Stack()),
+				Stack: string(captureStack(2)),
 				Error: true,
 			})
 		}
